@@ -3,9 +3,10 @@ import { Layout, Menu, Popconfirm } from 'antd'
 import { HomeOutlined, DiffOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
 import './index.scss'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { fetchUserInfoService } from '@/store/modules/user'
+import { clearUserInfo, fetchUserInfoService } from '@/store/modules/user'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { removeToken } from '@/utils'
 
 const { Header, Sider } = Layout
 
@@ -28,7 +29,7 @@ const GeekLayout = () => {
   // 反向高亮：1、获取当前url上的路由路径；2、找到菜单Menu负责高亮的属性selectedKeys={xx}，绑定当前的路由路径
   // 1 → 钩子函数useLocation()用于获取当前路径
   const location = useLocation()
-  console.log(location.pathname)
+  // console.log(location.pathname)
   const selectedKey = location.pathname
 
   // 触发用户个人信息的action，一进页面就触发
@@ -36,6 +37,12 @@ const GeekLayout = () => {
   useEffect(() => {
     dispatch(fetchUserInfoService())
   }, [dispatch])
+
+  // 点击"退出"时的回调函数
+  const onConfirm = () => {
+    dispatch(clearUserInfo()) // 清除用户信息：redux中的token、redux中的userInfo、本地的token
+    navigate('/login') // 跳转到登录页
+  }
 
   const username = useSelector(state => state.user.userInfo.name)
 
@@ -46,7 +53,7 @@ const GeekLayout = () => {
         <div className="user-info">
           <span className="user-name">{username}</span>
           <span className="user-logout">
-            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
+            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消" onConfirm={onConfirm}>
               <LogoutOutlined /> 退出
             </Popconfirm>
           </span>
