@@ -5,7 +5,7 @@ import './index.scss'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useEffect, useState } from 'react'
-import { getChannelAPI } from '@/apis/article'
+import { getChannelAPI, createArticleAPI } from '@/apis/article'
 
 const { Option } = Select
 
@@ -23,6 +23,26 @@ const Publish = () => {
     getChannelList()
   }, [])
 
+  // 提交表单的回调函数
+  const onFinish = (formValue) => {
+    console.log(formValue)
+    const { title, content, channel_id } = formValue
+
+    // 根据接口文档的格式，处理收集到的表单数据
+    const requestData = { // 标准的接口文档的格式
+      title, // 文章标题
+      content, // 文章内容
+      cover: { // 文章封面
+        type: 0, // 文章封面类型，1自动，0无图，1一张，3三张
+        images: [] // 所有图片的链接地址
+      },
+      channel_id // 文章频道id
+    }
+
+    // 调用接口提交
+    createArticleAPI(requestData)
+  }
+
   return (
     <div className="publish">
       <Card
@@ -38,6 +58,8 @@ const Publish = () => {
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 1 }}
+          // 当表单的所有项目都通过校验时，点击提交按钮，自动触发onFinish回调函数
+          onFinish={onFinish}
         >
           <Form.Item
             label="标题"
