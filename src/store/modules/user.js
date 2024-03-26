@@ -8,19 +8,23 @@ const userStore = createSlice({
   name: 'user',
   initialState: { // 初始化状态变量
     // token: localStorage.getItem('token_key') || '' // 能取到就用本地的，取不到就用空串，重新获取token
-    token: getToken() || '' // 优化后的代码
+    token: getToken() || '', // 优化后的代码
+    userInfo: {} // 个人信息
   },
   reducers: { // 设置同步的修改方法
     setToken (state, action) {
       state.token = action.payload
       // localStorage.setItem('token_key', action.payload) // localStorage存一份
       _setToken(action.payload) // 优化后的代码
+    },
+    setUserInfo (state, action) {
+      state.userInfo = action.payload
     }
   }
 })
 
 // 解构出actionCreater
-const { setToken } = userStore.actions
+const { setToken, setUserInfo } = userStore.actions
 
 // 获取reducer函数
 const userReducer = userStore.reducer
@@ -33,5 +37,13 @@ const fetchLoginService = (loginForm) => {
   }
 }
 
-export { setToken, fetchLoginService }
+// 异步方法：2、获取用户个人信息
+const fetchUserInfoService = () => {
+  return async (dispatch) => {
+    const res = await request.get('/user/profile') // 请求头携带token，已经在请求拦截器携带了
+    dispatch(setUserInfo(res.data))
+  }
+}
+
+export { setToken, fetchLoginService, fetchUserInfoService }
 export default userReducer
