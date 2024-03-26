@@ -2,26 +2,15 @@
 import { Layout, Menu, Popconfirm } from 'antd'
 import { HomeOutlined, DiffOutlined, EditOutlined, LogoutOutlined } from '@ant-design/icons'
 import './index.scss'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 const { Header, Sider } = Layout
 
 const items = [
-  {
-    label: '首页',
-    key: '/',
-    icon: <HomeOutlined />,
-  },
-  {
-    label: '文章管理',
-    key: '/article', // 点击时拿到key的属性值，即得知当前要跳到哪里去
-    icon: <DiffOutlined />,
-  },
-  {
-    label: '创建文章',
-    key: '/publish',
-    icon: <EditOutlined />,
-  },
+  { label: '首页', key: '/', icon: <HomeOutlined /> },
+  // 点击时拿到key的属性值，即得知当前要跳到哪里去
+  { label: '文章管理', key: '/article', icon: <DiffOutlined /> },
+  { label: '创建文章', key: '/publish', icon: <EditOutlined /> }
 ]
 
 const GeekLayout = () => {
@@ -32,6 +21,12 @@ const GeekLayout = () => {
     const path = route.key
     navigate(path) // 通过钩子函数跳转
   }
+
+  // 反向高亮：1、获取当前url上的路由路径；2、找到菜单Menu负责高亮的属性selectedKeys={xx}，绑定当前的路由路径
+  // 1：钩子函数useLocation()用于获取当前路径
+  const location = useLocation()
+  console.log(location.pathname)
+  const selectedKey = location.pathname
 
   return (
     <Layout>
@@ -51,7 +46,7 @@ const GeekLayout = () => {
           <Menu
             mode="inline"
             theme="dark"
-            defaultSelectedKeys={['1']}
+            selectedKeys={selectedKey}
             onClick={onMenuClick}
             items={items}
             style={{ height: '100%', borderRight: 0 }}></Menu>
