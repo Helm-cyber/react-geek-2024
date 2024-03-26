@@ -12,7 +12,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <AuthRoute><Layout /></AuthRoute>,
     children: [ // 二级路由配置
-      { path: 'home', element: <Home /> },
+      { index: true, element: <Home /> },
       { path: 'article', element: <Article /> },
       { path: 'publish', element: <Publish /> }
     ]
