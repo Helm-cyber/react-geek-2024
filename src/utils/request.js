@@ -28,7 +28,7 @@ request.interceptors.response.use((response)=> {
   // 对响应错误做点什么
 
   // 监控401状态码(Token失效)
-  console.dir(error) // 状态码是error.response.status
+  // console.dir(error) // 状态码是error.response.status
   if (error.response.status === 401) {
     removeToken() // 清除本地Token
     router.navigate('/login') // 跳转到登录页
