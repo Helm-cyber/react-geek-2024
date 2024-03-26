@@ -3,6 +3,7 @@
 import { removeToken, request } from "@/utils"
 import { createSlice } from "@reduxjs/toolkit"
 import { setToken as _setToken, getToken } from '@/utils'
+import { loginAPI, getProfileAPI } from "@/apis/user"
 
 const userStore = createSlice({
   name: 'user',
@@ -37,7 +38,7 @@ const userReducer = userStore.reducer
 // 异步方法：1、登录时获取token，传来用户填写的表单数据
 const fetchLoginService = (loginForm) => {
   return async (dispatch) => {
-    const res = await request.post('/authorizations', loginForm)
+    const res = await loginAPI(loginForm)
     dispatch(setToken(res.data.token)) // 传入actionCreater，生成action对象，并传入后端返回的数据，设置状态变量的值
   }
 }
@@ -45,7 +46,7 @@ const fetchLoginService = (loginForm) => {
 // 异步方法：2、获取用户个人信息
 const fetchUserInfoService = () => {
   return async (dispatch) => {
-    const res = await request.get('/user/profile') // 请求头携带token，已经在请求拦截器携带了
+    const res = await getProfileAPI() // 请求头携带token，已经在请求拦截器携带了
     dispatch(setUserInfo(res.data))
   }
 }
