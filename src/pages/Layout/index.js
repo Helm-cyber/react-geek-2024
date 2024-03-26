@@ -6,7 +6,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { clearUserInfo, fetchUserInfoService } from '@/store/modules/user'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeToken } from '@/utils'
 
 const { Header, Sider } = Layout
 
