@@ -1,6 +1,5 @@
 // 用户相关的所有请求
 
-import axios from "axios"
 import { request } from "@/utils"
 
 // 1、登录请求
