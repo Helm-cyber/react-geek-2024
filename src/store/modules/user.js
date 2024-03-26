@@ -2,7 +2,7 @@
 
 import { request } from "@/utils"
 import { createSlice } from "@reduxjs/toolkit"
-import { setToken as _setToken, getToken, removeToken } from '@/utils'
+import { setToken as _setToken, getToken } from '@/utils'
 
 const userStore = createSlice({
   name: 'user',
