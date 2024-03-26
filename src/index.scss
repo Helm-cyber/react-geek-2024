@@ -1,5 +1,9 @@
+html,
 body {
-  div { // 嵌套语法，是sass的语法，只在scss下支持
-    color: blue
-  }
+  margin: 0;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
 }
