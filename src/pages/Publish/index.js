@@ -113,6 +113,8 @@ const Publish = () => {
                 action={'http://geek.itheima.net/v1_0/upload'}
                 name='image'
                 onChange={onChange}
+                // 通过maxCount属性，限制上传数量，当为1时，始终用最新上传的代替当前的
+                maxCount={imageType}
               >
                 <div style={{ marginTop: 8 }}>
                   <PlusOutlined />
