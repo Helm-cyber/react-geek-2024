@@ -81,7 +81,8 @@ const Publish = () => {
       // 显示图片，后端要求的格式是：每一个图片都是一个对象，其中有url属性，因此通过map()方法处理数据
       setImageList(cover.images.map(url => { return { url } }))
     }
-    getArticleDetail()
+    // 只有存在articleId时，才调用该函数，否则"新增文章"时也会调用
+    if (articleId) getArticleDetail()
   }, [articleId, form])
 
   return (
@@ -90,7 +91,7 @@ const Publish = () => {
         title={
           <Breadcrumb items={[
             { title: <Link to={'/'}>首页</Link> },
-            { title: '发布文章' },
+            { title: `${articleId ? '编辑' : '新增'}文章` },
           ]}
           />
         }
