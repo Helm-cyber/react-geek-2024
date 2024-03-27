@@ -1,16 +1,18 @@
 import { Card, Breadcrumb, Form, Button, Radio, Input, Upload, Space, Select, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useEffect, useState } from 'react'
-import { createArticleAPI, getArticleById } from '@/apis/article'
+import { createArticleAPI, getArticleById, updateArticleAPI } from '@/apis/article'
 import { useChannel } from '@/hooks/useChannel'
 
 const { Option } = Select
 
 const Publish = () => {
+  const navigate = useNavigate()
+
   // 获取频道列表
   const { channelList } = useChannel()
 
@@ -22,18 +24,34 @@ const Publish = () => {
     if (imageList.length !== imageType) return message.warning('封面类型和图片数量不匹配！')
 
     const { title, content, channel_id } = formValue
+
     // 根据接口文档的格式，处理收集到的表单数据
     const requestData = { // 标准的接口文档的格式
       title, // 文章标题
       content, // 文章内容
       cover: { // 文章封面
         type: imageType, // 文章封面类型，1自动，0无图，1一张，3三张
-        images: imageList.map(item => item.response.data.url) // 所有图片的链接地址
+        // 这里获取到的url只是“新增文章”时的逻辑，在“编辑文章”时还需进行处理
+        // 编辑文章：携带id跳回该页面，图片也获取到了，但是每张图片的对象内的属性 与 新增时的图片属性 不同了
+        // 新增图片时，通过item.response.data.url获取到；而回显的图片，需要通过item.url获取到
+        images: imageList.map(item => {
+          if (item.response) return item.response.data.url
+          else return item.url
+        }) // 所有图片的链接地址
       },
       channel_id // 文章频道id
     }
-    // 调用接口提交
-    createArticleAPI(requestData)
+
+    // 调用不同的接口：新增文章 → 新增文章的接口；编辑文章 → 编辑文章的接口
+    // 有articleId，就是编辑状态；没有就是新增状态
+    if (articleId) {
+      updateArticleAPI({ ...requestData, id: articleId })
+      message.success('更新文章成功！')
+    } else {
+      createArticleAPI(requestData)
+      message.success('发布文章成功！')
+    }
+    navigate('/article')
   }
 
   // 上传图片的回调函数

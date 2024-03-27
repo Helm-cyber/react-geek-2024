@@ -34,3 +34,8 @@ export function delArticleAPI (id) {
 export function getArticleById (id) {
   return request({ url: `/mp/articles/${id}`, method: 'GET' })
 }
+
+// 6、更新文章
+export function updateArticleAPI (data) {
+  return request({ url: `/mp/articles/${data.id}?draft=false`, method: 'PUT', data })
+}
