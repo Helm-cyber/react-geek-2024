@@ -15,3 +15,12 @@ export function createArticleAPI (data) {
     data
   })
 }
+
+// 3、获取文章列表
+export function getArticleListAPI (params) {
+  return request({
+    url: '/mp/articles',
+    method: 'GET',
+    params // 请求参数query要用params
+  })
+}
