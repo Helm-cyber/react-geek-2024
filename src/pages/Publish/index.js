@@ -1,11 +1,11 @@
 import { Card, Breadcrumb, Form, Button, Radio, Input, Upload, Space, Select, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useState } from 'react'
-import { createArticleAPI } from '@/apis/article'
+import { useEffect, useState } from 'react'
+import { createArticleAPI, getArticleById } from '@/apis/article'
 import { useChannel } from '@/hooks/useChannel'
 
 const { Option } = Select
@@ -50,6 +50,25 @@ const Publish = () => {
     setImageType(e.target.value)
   }
 
+  // 回填数据：页面一打开时就根据传来的id值获取对应的文章数据
+  // id在路由参数上，通过useSearchParams()钩子函数，得到一个变量searchParams，它有get()方法获取参数
+  const [searchParams] = useSearchParams()
+  const articleId = searchParams.get('id')
+  // console.log(articleId)
+
+  // 获取Form组件的实例对象：Form组件有固定方法Form.useForm()，返回一个数组，解构出form，将form绑定到Form组件上
+  const [form] = Form.useForm()
+
+  useEffect(() => {
+    // 1、通过id获取文章数据
+    async function getArticleDetail () {
+      const res = await getArticleById(articleId)
+      // 2、调用Form组件实例的方法setFieldsValue()，完成回填
+      form.setFieldsValue(res.data)
+    }
+    getArticleDetail()
+  }, [articleId, form])
+
   return (
     <div className="publish">
       <Card
@@ -68,6 +87,7 @@ const Publish = () => {
           initialValues={{ type: 0 }}
           // 当表单的所有项目都通过校验时，点击提交按钮，自动触发onFinish回调函数
           onFinish={onFinish}
+          form={form} // 绑定实例对象
         >
           <Form.Item
             label="标题"
