@@ -14,6 +14,13 @@ const { RangePicker } = DatePicker
 const Article = () => {
   const { channelList } = useChannel() // 获取频道列表数据
 
+  // 定义枚举状态
+  const statusList = {
+    1: <Tag color='warning'>待审核</Tag>,
+    2: <Tag color='success'>审核通过</Tag>
+  }
+
+  // 准备列数据
   const columns = [
     {
       title: '封面',
@@ -31,7 +38,9 @@ const Article = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: data => <Tag color="green">审核通过</Tag>
+      // data就是后端返回的状态status，可以根据它做条件渲染
+      // 0-草稿，1-待审核，2-审核通过，3-审核失败，目前后端只支持1和2
+      render: data => statusList[data]
     },
     {
       title: '发布时间',
