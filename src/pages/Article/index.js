@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Popconfirm } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN' // 引入汉化包，显示中文
 import { Table, Tag, Space } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import img404 from '@/assets/error.png'
 import { useChannel } from '@/hooks/useChannel'
 import { useEffect, useState } from 'react'
-import { getArticleListAPI } from '@/apis/article'
+import { delArticleAPI, getArticleListAPI } from '@/apis/article'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -64,12 +64,21 @@ const Article = () => {
         return (
           <Space size="middle">
             <Button type="primary" shape="circle" icon={<EditOutlined />} />
-            <Button
-              type="primary"
-              danger
-              shape="circle"
-              icon={<DeleteOutlined />}
-            />
+            <Popconfirm
+              title="删除文章"
+              description="确认要删除文章吗?"
+              // 传递data，拿到当前项的id，才可以进行删除操作
+              onConfirm={() => onConfirm(data)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type="primary"
+                danger
+                shape="circle"
+                icon={<DeleteOutlined />}
+              />
+            </Popconfirm>
           </Space>
         )
       }
@@ -135,6 +144,15 @@ const Article = () => {
     setRequestData({
       ...requestData,
       page // 更改为当前页码
+    })
+  }
+
+  // 点击删除框的确认时的回调函数
+  const onConfirm = async (data) => {
+    // console.log('删除了', data.id)
+    await delArticleAPI(data.id)
+    setRequestData({ // 同理，只要requestData变化，就会触发更新
+      ...requestData // 但是这次没有要修改的参数，只是需要变化一下，重新拉取一下
     })
   }
 
