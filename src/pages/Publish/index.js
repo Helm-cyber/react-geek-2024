@@ -63,8 +63,23 @@ const Publish = () => {
     // 1、通过id获取文章数据
     async function getArticleDetail () {
       const res = await getArticleById(articleId)
+      const data = res.data
+      const { cover } = data
       // 2、调用Form组件实例的方法setFieldsValue()，完成回填
-      form.setFieldsValue(res.data)
+      // form.setFieldsValue(res.data)
+      form.setFieldsValue({
+        ...data,
+        type: cover.type
+      })
+
+      // 目前写法无法回显文章封面图片，因为是数据结构的问题
+      // setFieldsValue()方法，要求传入的是{ type: 0或1或3 }，而现在给的res.data中是{ cover: { type: 3 } }
+      // 解决：改写传入的参数，变为一个对象，先展开...res.data，再单独设置type值是res.data.cover.type
+
+      // 回显图片列表
+      setImageType(cover.type) // 先让静态结构显示出来
+      // 显示图片，后端要求的格式是：每一个图片都是一个对象，其中有url属性，因此通过map()方法处理数据
+      setImageList(cover.images.map(url => { return { url } }))
     }
     getArticleDetail()
   }, [articleId, form])
@@ -128,6 +143,7 @@ const Publish = () => {
                 onChange={onChange}
                 // 通过maxCount属性，限制上传数量，当为1时，始终用最新上传的代替当前的
                 maxCount={imageType}
+                fileList={imageList} // 回显数据：当前要显示的图片列表
               >
                 <div style={{ marginTop: 8 }}>
                   <PlusOutlined />
