@@ -1,4 +1,4 @@
-import { Card, Breadcrumb, Form, Button, Radio, Input, Upload, Space, Select } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, Input, Upload, Space, Select, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import './index.scss'
@@ -25,20 +25,22 @@ const Publish = () => {
 
   // 提交表单的回调函数
   const onFinish = (formValue) => {
-    console.log(formValue)
-    const { title, content, channel_id } = formValue
+    // console.log(formValue)
 
+    // 校验imageType和imageList的数量是否相等，即单图对应1张，三图对应3张，不能多也不能少
+    if (imageList.length !== imageType) return message.warning('封面类型和图片数量不匹配！')
+
+    const { title, content, channel_id } = formValue
     // 根据接口文档的格式，处理收集到的表单数据
     const requestData = { // 标准的接口文档的格式
       title, // 文章标题
       content, // 文章内容
       cover: { // 文章封面
-        type: 0, // 文章封面类型，1自动，0无图，1一张，3三张
-        images: [] // 所有图片的链接地址
+        type: imageType, // 文章封面类型，1自动，0无图，1一张，3三张
+        images: imageList.map(item => item.response.data.url) // 所有图片的链接地址
       },
       channel_id // 文章频道id
     }
-
     // 调用接口提交
     createArticleAPI(requestData)
   }
