@@ -46,8 +46,15 @@ const Publish = () => {
   // 上传图片的回调函数
   const [ imageList, setImageList ] = useState([])
   const onChange = (value) => { // value总共有三次，最后一次的对象中包含file、fileList
-    console.log('正在上传中', value)
+    // console.log('正在上传中', value)
     setImageList(value.fileList)
+  }
+
+  // 切换图片封面类型时的回调函数
+  const [ imageType, setImageType] = useState(0)
+  const onTypeChange = (e) => { // e.target.value就是<Radio>的value属性值
+    // console.log('封面切换了', e)
+    setImageType(e.target.value)
   }
 
   return (
@@ -64,7 +71,8 @@ const Publish = () => {
         <Form
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
-          initialValues={{ type: 1 }}
+          // 控制整个表单域的初始值，这里的type对应下面的<Form.Item name="type">，最好为0，和state中对应，即无图模式
+          initialValues={{ type: 0 }}
           // 当表单的所有项目都通过校验时，点击提交按钮，自动触发onFinish回调函数
           onFinish={onFinish}
         >
@@ -89,25 +97,28 @@ const Publish = () => {
 
           <Form.Item label="封面">
             <Form.Item name="type">
-              <Radio.Group>
+              <Radio.Group onChange={onTypeChange}>
                 <Radio value={1}>单图</Radio>
                 <Radio value={3}>三图</Radio>
                 <Radio value={0}>无图</Radio>
               </Radio.Group>
             </Form.Item>
-            <Upload
-              // listType决定选择文件框的外观样式，showUploadList控制显示的上传列表
-              // 接口请求参数中叫image，这里name就叫image
-              listType="picture-card"
-              showUploadList
-              action={'http://geek.itheima.net/v1_0/upload'}
-              name='image'
-              onChange={onChange}
-            >
-              <div style={{ marginTop: 8 }}>
-                <PlusOutlined />
-              </div>
-            </Upload>
+            {
+              imageType > 0 && 
+              <Upload
+                // listType决定选择文件框的外观样式，showUploadList控制显示的上传列表
+                // 接口请求参数中叫image，这里name就叫image
+                listType="picture-card"
+                showUploadList
+                action={'http://geek.itheima.net/v1_0/upload'}
+                name='image'
+                onChange={onChange}
+              >
+                <div style={{ marginTop: 8 }}>
+                  <PlusOutlined />
+                </div>
+              </Upload>
+            }
           </Form.Item>
 
           <Form.Item
