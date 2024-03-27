@@ -92,17 +92,41 @@ const Article = () => {
     }
   ]
 
+  // 筛选功能：1、按照接口文档，准备参数
+  const [requestData, setRequestData] = useState({
+    status: '', // 文章状态
+    channel_id: '', // 频道id
+    begin_pubdate: '', // 起始时间
+    end_pubdate: '', // 截止时间
+    page: 1, // 当前页码(默认为1)
+    per_page: 4 // 当前页条数(默认为10)
+  })
+
   // 获取文章列表
   const [ articleList, setArticleList ] = useState([])
   const [ count, setCount ] = useState(0)
   useEffect(() => {
     async function getArticleList () {
-      const res = await getArticleListAPI()
+      const res = await getArticleListAPI(requestData)
       setArticleList(res.data.results)
       setCount(res.data.total_count)
     }
     getArticleList()
-  }, [])
+  }, [requestData])
+
+  // 筛选功能：2、获取当前的筛选数据(表单验证通过时的回调函数)
+  const onFinish = (formValue) => {
+    // 筛选功能：3、把表单的数据放到请求参数中
+    setRequestData({ // 修改对象类型的数据时，不能直接修改内部数据，先解构出所有数据，再补充属性
+      ...requestData,
+      channel_id: formValue.channel_id,
+      status: formValue.status,
+      begin_pubdate: formValue.date[0].format('YYYY-MM-DD'), // 收集到的格式是antD格式，自带有format()方法
+      end_pubdate: formValue.date[1].format('YYYY-MM-DD')
+    })
+    // 筛选功能：4、重新拉取文章列表，并渲染table(该逻辑是重复的，需要复用)
+    // 这里不再需要写代码，因为requestData变化时，会重复执行副作用函数，看上面的useEffect()和它的依赖项
+  }
 
   return (
     <div>
@@ -115,7 +139,7 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: '' }}>
+        <Form initialValues={{ status: '' }} onFinish={onFinish}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={''}>全部</Radio>
