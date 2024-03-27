@@ -128,6 +128,16 @@ const Article = () => {
     // 这里不再需要写代码，因为requestData变化时，会重复执行副作用函数，看上面的useEffect()和它的依赖项
   }
 
+  // 分页的回调函数
+  const onPageChange = (page) => { // page是点击的那个页码
+    // console.log(page)
+    // 修改参数依赖项，触发数据的重新获取 + 列表的重新渲染
+    setRequestData({
+      ...requestData,
+      page // 更改为当前页码
+    })
+  }
+
   return (
     <div>
       <Card
@@ -173,7 +183,11 @@ const Article = () => {
 
       {/* 表格区域 */}
       <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={articleList} />
+        <Table rowKey="id" columns={columns} dataSource={articleList} pagination={{
+          total: count, // 总条数
+          pageSize: requestData.per_page, // 每页条数
+          onChange: onPageChange
+        }} />
       </Card>
     </div>
   )
